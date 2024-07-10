@@ -9,6 +9,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.sekeni.databinding.ActivityMainBinding
 import com.google.android.material.navigation.NavigationView
 
@@ -19,6 +20,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        installSplashScreen()
+        Thread.sleep(3000)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
