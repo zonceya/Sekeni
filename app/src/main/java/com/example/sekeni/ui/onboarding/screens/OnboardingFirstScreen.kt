@@ -18,10 +18,15 @@ class OnboardingFirstScreen : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_onboarding_first_screen, container, false)
 
-        val viewPager =  activity?.findViewById<ViewPager2>(R.id.viewPager)
+        // Assuming ViewPager2 is part of the activity's layout
+        val viewPager = activity?.findViewById<ViewPager2>(R.id.viewPager)
         val nextButton = view.findViewById<TextView>(R.id.next)
+
+        // Handle button click to navigate to the next screen
         nextButton.setOnClickListener {
-            viewPager?.currentItem = 1
+            if (viewPager != null) {
+                viewPager.currentItem += 1
+            }  // Move to next page
         }
 
         return view

@@ -20,14 +20,14 @@ class OnboardingThirdScreen : Fragment() {
         val finishButton = view.findViewById<TextView>(R.id.finish)
         finishButton.setOnClickListener {
             onBoardingFinished()
-            findNavController().navigate(R.id.action_viewPagerFragment_to_nav_home)
+            findNavController().navigate(R.id.action_viewPagerFragment_to_loginFragment)
         }
         return view
     }
 
     private fun onBoardingFinished(){
         val sharedPref = requireActivity().getSharedPreferences("onBoarding", Context.MODE_PRIVATE)
-        with (sharedPref.edit()) {
+        with(sharedPref.edit()) {
             putBoolean("Finished", true)
             apply()
         }

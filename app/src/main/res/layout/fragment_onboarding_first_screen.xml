@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".onboarding.screens.OnboardingFirstScreen">
+    tools:context="ui.onboarding.screens.OnboardingFirstScreen">
 
 
     <ImageView
@@ -12,7 +12,7 @@
         android:layout_width="300dp"
         android:layout_height="300dp"
         android:layout_marginTop="150dp"
-        android:src="@drawable/ic_clothes"
+        android:src="@drawable/ic_sell_clothes"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -22,6 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
+        android:textColor="@color/black"
         android:text="@string/onboarding_screen_tittle1"
         android:textSize="25sp"
         android:textStyle="bold|italic"
@@ -36,6 +37,7 @@
         android:layout_marginStart="50dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="50dp"
+        android:textColor="@color/black"
         android:gravity="center"
         android:text="@string/onboarding_screen_disc"
         android:textSize="16sp"

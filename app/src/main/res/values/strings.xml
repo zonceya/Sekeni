@@ -22,4 +22,12 @@
     <string name="onboarding_screen_tittle2">Shop with Ease</string>
     <string name="onboarding_payment">Payment</string>
     <string name="onboarding_screen3">Receive payments instantly or choose a convenient cash option. Enjoy a seamless transaction experience every time!</string>
+    <string name="facebook_app_id">501483522354716</string>
+    <string name="fb_login_protocol_scheme">fb501483522354716D</string>
+    <string name="facebook_client_token">45c4a3783bf9f61a5df8518673fb7fdb</string>
+    <string name="sekeni">Sekeni</string>
+    <string name="sign_in_with_google">Continue with Google</string>
+    <string name="default_web_client_id">156426783612-citljsg4utkldqndcefe6biifei6hkg3.apps.googleusercontent.com
+</string>
+    <string name="todo">TODO</string>
 </resources>

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "156426783612",
+    "project_id": "sekeni-1a0fd",
+    "storage_bucket": "sekeni-1a0fd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:156426783612:android:54f441894cb0756e8a32f9",
+        "android_client_info": {
+          "package_name": "com.example.sekeni"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "156426783612-tkdfmms6dn1c32tqbpbivl94v9l2u96t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sekeni",
+            "certificate_hash": "c70f1a5b1fbbfdcc8d21bb523bae1a27dd607bef"
+          }
+        },
+        {
+          "client_id": "156426783612-eb9rs9vbnbq8eqqo4h48k9tq80puohn7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoyskGvUyHSwEk718FGOLUm-gscixyuHE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "156426783612-eb9rs9vbnbq8eqqo4h48k9tq80puohn7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
