@@ -20,13 +20,16 @@ class OnboardingThirdScreen : Fragment() {
         val finishButton = view.findViewById<TextView>(R.id.finish)
         finishButton.setOnClickListener {
             onBoardingFinished()
-            findNavController().navigate(R.id.action_viewPagerFragment_to_loginFragment)
+            // Delay navigation for 2 seconds
+            view.postDelayed({
+                findNavController().navigate(R.id.action_viewPagerFragment_to_loginFragment)
+            }, 2000) // 2000 milliseconds = 2 seconds
         }
         return view
     }
 
-    private fun onBoardingFinished(){
-        val sharedPref = requireActivity().getSharedPreferences("onBoarding", Context.MODE_PRIVATE)
+    private fun onBoardingFinished() {
+        val sharedPref = requireActivity().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         with(sharedPref.edit()) {
             putBoolean("Finished", true)
             apply()

@@ -18,6 +18,9 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.VideoView
+import androidx.activity.addCallback
+import androidx.appcompat.app.AppCompatActivity
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
@@ -33,6 +36,7 @@ import com.facebook.*
 import com.facebook.login.LoginResult
 import com.facebook.login.widget.LoginButton
 import com.bumptech.glide.request.RequestOptions
+import com.example.sekeni.MainActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -70,7 +74,9 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_login, container, false)
-
+        (activity as? AppCompatActivity)?.supportActionBar?.hide()
+        val drawerLayout = (activity as MainActivity).findViewById<DrawerLayout>(R.id.drawer_layout)
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         // Video View
         videoView = view.findViewById(R.id.videoView)
         loadingIndicator = view.findViewById(R.id.loading_indicator)
@@ -120,23 +126,6 @@ class LoginFragment : Fragment() {
 
         videoView.setOnPreparedListener { mp ->
             mp.isLooping = true
-            // Ensures the video fills the entire VideoView
-            val videoWidth = mp.videoWidth
-            val videoHeight = mp.videoHeight
-            val videoProportion = videoWidth.toFloat() / videoHeight.toFloat()
-
-            val screenWidth = videoView.width
-            val screenHeight = videoView.height
-            val screenProportion = screenWidth.toFloat() / screenHeight.toFloat()
-
-            if (videoProportion > screenProportion) {
-                videoView.layoutParams.height = screenHeight
-                videoView.layoutParams.width = (screenHeight * videoProportion).toInt()
-            } else {
-                videoView.layoutParams.width = screenWidth
-                videoView.layoutParams.height = (screenWidth / videoProportion).toInt()
-            }
-
             videoView.start()
         }
         facebookLoginButton.visibility = View.VISIBLE
@@ -437,9 +426,18 @@ class LoginFragment : Fragment() {
             isNavigating = true
             videoView.start()
         }
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
+
+        }
       //  checkAndRefreshToken()
     }
        // checkAndRefreshToken() // Check and refresh token on resume
 
+    override fun onDestroyView() {
+        super.onDestroyView()
 
+        // Unlock the drawer when leaving LoginFragment
+        val drawerLayout = (activity as MainActivity).findViewById<DrawerLayout>(R.id.drawer_layout)
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+    }
 }

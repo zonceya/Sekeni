@@ -1,6 +1,8 @@
 package com.example.sekeni.ui.onboarding.screens
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,10 +22,10 @@ class OnboardingSecondScreen : Fragment() {
 
         val viewPager =  activity?.findViewById<ViewPager2>(R.id.viewPager)
 
-        val nextButton = view.findViewById<TextView>(R.id.next2)
-        nextButton.setOnClickListener {
-            viewPager?.currentItem = 2
-        }
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            viewPager?.currentItem = 2 // Move to the next page
+        }, 3000)
 
         return view
     }

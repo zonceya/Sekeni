@@ -12,6 +12,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.GravityCompat
+import androidx.viewpager2.widget.ViewPager2
 import com.example.sekeni.databinding.ActivityMainBinding
 import com.google.android.material.navigation.NavigationView
 import com.facebook.FacebookSdk
@@ -34,29 +35,24 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setSupportActionBar(binding.appBarMain.toolbar)
-        clearOnboardingPreferences()
+        //clearOnboardingPreferences()
         // Check if onboarding is finished
         val sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-        val isFirstLaunch = sharedPref.getBoolean("isFirstLaunch", true)
-
+        val onboardingFinished = sharedPref.getBoolean("Finished", false)
         // Set up navigation
         val navController = findNavController(R.id.nav_host_fragment)
 
-
-
-        if (isFirstLaunch) {
-            // Navigate to onboarding screen
+        if (!onboardingFinished) {
+            // Navigate to onboarding screen if it hasn't finished
             navController.navigate(R.id.viewPagerFragment)
-            with(sharedPref.edit()) {
-                putBoolean("isFirstLaunch", false)
-                apply()
-            }
         } else {
-            // Navigate to login or home based on login status
+            // Onboarding finished, now check login status
             val isLoggedIn = sharedPref.getBoolean("LoggedIn", false)
             if (isLoggedIn) {
+                // Navigate to home screen if logged in
                 navController.navigate(R.id.nav_home)
             } else {
+                // Navigate to login screen if not logged in
                 navController.navigate(R.id.loginFragment)
             }
         }
@@ -87,6 +83,7 @@ class MainActivity : AppCompatActivity() {
             apply()
         }
     }
+
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
@@ -125,10 +122,25 @@ class MainActivity : AppCompatActivity() {
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+        val viewPager = findViewById<ViewPager2>(R.id.viewPager)
+
+        // Check if the drawer is open
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START)
+        } else if (viewPager != null && viewPager.currentItem > 0) {
+            // If the ViewPager has more pages, navigate back
+            viewPager.currentItem -= 1
         } else {
-            super.onBackPressed()
+            // If on the first page of the onboarding
+            if (viewPager?.currentItem == 0) {
+                clearOnboardingPreferences() // Clear onboarding preferences
+                finish() // Exit the app
+            } else {
+                // If no more pages, use default back behavior
+                super.onBackPressed()
+            }
         }
     }
+
+
 }
