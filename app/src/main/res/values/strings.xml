@@ -31,4 +31,5 @@
 </string>
     <string name="todo">TODO</string>
     <string name="Login_heading_line">The On-line Mavumbulula.\nOwn your own On-line Store.\nStart selling all the clothes you don\'t want to give to your uncles and cousins</string>
+    <string name="logout">logout</string>
 </resources>

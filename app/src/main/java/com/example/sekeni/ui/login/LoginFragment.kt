@@ -311,7 +311,6 @@ class LoginFragment : Fragment() {
                     ): Boolean {
                         // Hide loading indicator
                         loadingIndicator.visibility = View.GONE
-                        navigateToHome()
                         return false
                     }
                 })
@@ -342,7 +341,7 @@ class LoginFragment : Fragment() {
             .setPopUpTo(R.id.loginFragment, true)  // Ensure the back stack is cleared
             .build()
         // Navigate to the Home fragment
-        findNavController().navigate(R.id.action_loginFragment_to_nav_home)
+        findNavController().navigate(R.id.action_loginFragment_to_nav_home, null, navOptions)
     }
     private fun navigateToLogin() {
         // Reset isNavigating flag to prevent redundant navigation

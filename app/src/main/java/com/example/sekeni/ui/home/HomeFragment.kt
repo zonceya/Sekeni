@@ -1,12 +1,16 @@
 package com.example.sekeni.ui.home
 
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.sekeni.R
 import com.example.sekeni.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
