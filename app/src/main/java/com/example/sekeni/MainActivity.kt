@@ -2,6 +2,8 @@ package com.example.sekeni
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
@@ -12,6 +14,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.GravityCompat
+import androidx.navigation.NavController
 import androidx.viewpager2.widget.ViewPager2
 import com.example.sekeni.databinding.ActivityMainBinding
 import com.google.android.material.navigation.NavigationView
@@ -30,15 +33,31 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
-        Thread.sleep(3000)
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setSupportActionBar(binding.appBarMain.toolbar)
-        //clearOnboardingPreferences()
-        // Check if onboarding is finished
+        // Initialize Firebase Auth and SDK
+        initializeFacebook()
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            checkOnboardingAndLoginStatus()
+        }, 3000)
+
+        checkOnboardingAndLoginStatus()
+    }
+
+    private fun initializeFacebook(){
+        auth = FirebaseAuth.getInstance()
+        FacebookSdk.sdkInitialize(applicationContext)
+        AppEventsLogger.activateApp(application)
+    }
+    private fun checkOnboardingAndLoginStatus() {
         val sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         val onboardingFinished = sharedPref.getBoolean("Finished", false)
+        val isLoggedIn = sharedPref.getBoolean("LoggedIn", false)
+
         // Set up navigation
         val navController = findNavController(R.id.nav_host_fragment)
 
@@ -46,8 +65,7 @@ class MainActivity : AppCompatActivity() {
             // Navigate to onboarding screen if it hasn't finished
             navController.navigate(R.id.viewPagerFragment)
         } else {
-            // Onboarding finished, now check login status
-            val isLoggedIn = sharedPref.getBoolean("LoggedIn", false)
+            // Navigate based on login status
             if (isLoggedIn) {
                 // Navigate to home screen if logged in
                 navController.navigate(R.id.nav_home)
@@ -57,24 +75,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
         // Set up navigation drawer
-        val drawerLayout: DrawerLayout = binding.drawerLayout
-        val navView: NavigationView = binding.navView
-       // navView.setNavigationItemSelectedListener(this)
-        appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow), drawerLayout
-        )
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
-
-        // Initialize Facebook SDK
-        auth = FirebaseAuth.getInstance()
-        FacebookSdk.sdkInitialize(applicationContext)
-        AppEventsLogger.activateApp(application)
-
-        navView.menu.findItem(R.id.nav_logout).setOnMenuItemClickListener {
-            performLogout()
-            true
-        }
+        setupNavigationDrawer(navController)
     }
     private fun clearOnboardingPreferences() {
         val sharedPref = getSharedPreferences("onBoarding", Context.MODE_PRIVATE)
@@ -88,7 +89,21 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
+    private fun setupNavigationDrawer(navController: NavController) {
+        val drawerLayout: DrawerLayout = binding.drawerLayout
+        val navView: NavigationView = binding.navView
 
+        appBarConfiguration = AppBarConfiguration(
+            setOf(R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow), drawerLayout
+        )
+        setupActionBarWithNavController(navController, appBarConfiguration)
+        navView.setupWithNavController(navController)
+
+        navView.menu.findItem(R.id.nav_logout).setOnMenuItemClickListener {
+            performLogout()
+            true
+        }
+    }
    private fun performLogout() {
         // Sign out from Firebase
         Log.d("MainActivity", "Signing out from Firebase")
