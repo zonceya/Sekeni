@@ -322,8 +322,6 @@ class LoginFragment : Fragment() {
             googleSignInButton.visibility = View.GONE
         }
     }
-
-
     private fun navigateToHome() {
         // Save login status to shared preferences
         val sharedPref = requireActivity().getSharedPreferences("login", Context.MODE_PRIVATE)
@@ -340,9 +338,13 @@ class LoginFragment : Fragment() {
         val navOptions = NavOptions.Builder()
             .setPopUpTo(R.id.loginFragment, true)  // Ensure the back stack is cleared
             .build()
-        // Navigate to the Home fragment
-        findNavController().navigate(R.id.action_loginFragment_to_nav_home, null, navOptions)
+        // Move navigation to happen after the view is fully created
+        view?.post {
+            // Navigate to the Home fragment
+            findNavController().navigate(R.id.action_loginFragment_to_nav_home, null, navOptions)
+        }
     }
+
     private fun navigateToLogin() {
         // Reset isNavigating flag to prevent redundant navigation
         isNavigating = false
