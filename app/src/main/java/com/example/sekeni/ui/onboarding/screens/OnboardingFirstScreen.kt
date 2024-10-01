@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.viewpager2.widget.ViewPager2
 import com.example.sekeni.R
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class OnboardingFirstScreen : Fragment() {
 
@@ -22,7 +23,10 @@ class OnboardingFirstScreen : Fragment() {
 
         // Assuming ViewPager2 is part of the activity's layout
         val viewPager = activity?.findViewById<ViewPager2>(R.id.viewPager)
+        val fab = activity?.findViewById<FloatingActionButton>(R.id.fab)
 
+        // Hide the FAB
+        fab?.visibility = View.GONE
         // Navigate to the next screen after a delay
         Handler(Looper.getMainLooper()).postDelayed({
             viewPager?.currentItem = 1 // Move to the next page

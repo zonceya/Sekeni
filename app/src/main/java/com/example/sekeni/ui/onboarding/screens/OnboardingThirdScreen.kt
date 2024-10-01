@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.sekeni.R
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class OnboardingThirdScreen : Fragment() {
 
@@ -18,6 +19,9 @@ class OnboardingThirdScreen : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_onboarding_third_screen, container, false)
         val finishButton = view.findViewById<TextView>(R.id.finish)
+        val fab = activity?.findViewById<FloatingActionButton>(R.id.fab)
+        // Hide the FAB
+        fab?.visibility = View.GONE
         finishButton.setOnClickListener {
             onBoardingFinished()
             // Delay navigation for 2 seconds
