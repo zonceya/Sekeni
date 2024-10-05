@@ -1,6 +1,6 @@
 package com.example.sekeni
 
-import android.content.Context
+
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -16,6 +16,8 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.GravityCompat
 import androidx.navigation.NavController
 import androidx.viewpager2.widget.ViewPager2
+import com.example.sekeni.data.local.FacebookAuthManager
+import com.example.sekeni.data.local.PreferencesHelper
 import com.example.sekeni.databinding.ActivityMainBinding
 import com.google.android.material.navigation.NavigationView
 import com.facebook.FacebookSdk
@@ -23,72 +25,72 @@ import com.facebook.appevents.AppEventsLogger
 import com.facebook.login.LoginManager
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
-
+    private lateinit var preferencesHelper: PreferencesHelper
+    private lateinit var facebookAuthManager: FacebookAuthManager
+    private lateinit var navController: NavController
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
-
+        val app = application as SekeniApplication
+        facebookAuthManager = app.facebookAuthManager
+        preferencesHelper = PreferencesHelper(this)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        navController = findNavController(R.id.nav_host_fragment)
 
         setSupportActionBar(binding.appBarMain.toolbar)
-        // Initialize Firebase Auth and SDK
-        initializeFacebook()
 
         Handler(Looper.getMainLooper()).postDelayed({
-            checkOnboardingAndLoginStatus()
         }, 3000)
-
         checkOnboardingAndLoginStatus()
     }
 
-    private fun initializeFacebook(){
-        auth = FirebaseAuth.getInstance()
-        FacebookSdk.sdkInitialize(applicationContext)
-        AppEventsLogger.activateApp(application)
-    }
     private fun checkOnboardingAndLoginStatus() {
-        val sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-        val onboardingFinished = sharedPref.getBoolean("Finished", false)
-        val isLoggedIn = sharedPref.getBoolean("LoggedIn", false)
+        // Log current destination and preferences
+        Log.d("NavigationCheck", "Current Destination: ${navController.currentDestination?.id}")
+        Log.d("Preferences", "Onboarding Finished: ${preferencesHelper.isOnboardingFinished()}")
+        Log.d("Preferences", "Logged In: ${preferencesHelper.isLoggedIn()}")
 
-        // Set up navigation
-        val navController = findNavController(R.id.nav_host_fragment)
+        when {
+            !preferencesHelper.isOnboardingFinished() -> {
+                // If onboarding is not finished
+                Log.d("Navigation", "Navigating to ViewPagerFragment (Onboarding)")
+                navController.navigate(R.id.viewPagerFragment)
+            }
 
-        if (!onboardingFinished) {
-            // Navigate to onboarding screen if it hasn't finished
-            navController.navigate(R.id.viewPagerFragment)
-        } else {
-            // Navigate based on login status
-            if (isLoggedIn) {
-                // Navigate to home screen if logged in
-                navController.navigate(R.id.nav_home)
-            } else {
-                // Navigate to login screen if not logged in
+            !preferencesHelper.isLoggedIn() -> {
+                // If not logged in, navigate to loginFragment
+                Log.d("Navigation", "Navigating to loginFragment (User not logged in)")
                 navController.navigate(R.id.loginFragment)
             }
+
+            navController.currentDestination?.id != R.id.nav_home -> {
+                // If logged in, navigate to home screen
+                Log.d("Navigation", "Navigating to HomeFragment (User logged in)")
+                navController.navigate(R.id.nav_home)
+                setupNavigationDrawer(navController)
+            }
         }
-        // Set up navigation drawer
-        setupNavigationDrawer(navController)
     }
+
+
+
+
     private fun clearOnboardingPreferences() {
-        val sharedPref = getSharedPreferences("onBoarding", Context.MODE_PRIVATE)
-        with(sharedPref.edit()) {
-            clear()
-            apply()
-        }
+        preferencesHelper.clearPreferences()
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
+
     private fun setupNavigationDrawer(navController: NavController) {
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
@@ -104,58 +106,39 @@ class MainActivity : AppCompatActivity() {
             true
         }
     }
-   private fun performLogout() {
-        // Sign out from Firebase
+    private fun performLogout() {
         Log.d("MainActivity", "Signing out from Firebase")
         auth.signOut()
 
-        // Sign out from Facebook
         Log.d("MainActivity", "Logging out from Facebook")
         LoginManager.getInstance().logOut()
 
-        // Update shared preferences
-        val sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-        with(sharedPref.edit()) {
-            putBoolean("LoggedIn", false)
-            apply()
+        Log.d("MainActivity", "Signing out from Google")
+        googleSignInClient.signOut().addOnCompleteListener(this) {
+            // Use PreferencesHelper to manage preferences
+            preferencesHelper.clearPreferences() // Ensure this resets login status
         }
-       Log.d("MainActivity", "Signing out from Google")
-       googleSignInClient.signOut().addOnCompleteListener(this) {
-           // Update shared preferences
-           val sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-           with(sharedPref.edit()) {
-               putBoolean("LoggedIn", false)
-               apply()
-           }
-       }
-        // Navigate to login screen
+
         Log.d("MainActivity", "Navigating to login screen")
         val navController = findNavController(R.id.nav_host_fragment)
         navController.navigate(R.id.loginFragment)
         binding.drawerLayout.closeDrawer(GravityCompat.START)
     }
+
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val viewPager = findViewById<ViewPager2>(R.id.viewPager)
 
-        // Check if the drawer is open
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START)
-        } else if (viewPager != null && viewPager.currentItem > 0) {
-            // If the ViewPager has more pages, navigate back
-            viewPager.currentItem -= 1
-        } else {
-            // If on the first page of the onboarding
-            if (viewPager?.currentItem == 0) {
-                clearOnboardingPreferences() // Clear onboarding preferences
-                finish() // Exit the app
-            } else {
-                // If no more pages, use default back behavior
-                super.onBackPressed()
+        when {
+            drawerLayout.isDrawerOpen(GravityCompat.START) -> drawerLayout.closeDrawer(GravityCompat.START)
+            viewPager != null && viewPager.currentItem > 0 -> viewPager.currentItem -= 1
+            viewPager?.currentItem == 0 -> {
+                clearOnboardingPreferences()
+                finish()
             }
+            else -> super.onBackPressed()
         }
     }
-
 
 }
