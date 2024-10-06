@@ -138,22 +138,26 @@ class LoginFragment : Fragment() {
     }
 
     private fun initializeFacebookLogin(view: View) {
+        // Initialize the FacebookAuthManager and LoginRepository manually
         val facebookAuthManager = (requireActivity().application as SekeniApplication).facebookAuthManager
+        val loginRepository = (requireActivity().application as SekeniApplication).loginRepository
+
+        val viewModel = ViewModelProvider(this)[LoginViewModel::class.java]
+        viewModel.setLoginRepository(loginRepository)
+        viewModel.setFacebookAuthManager(facebookAuthManager)
+
         callbackManager = facebookAuthManager.getCallbackManager()
         facebookLoginButton = view.findViewById(R.id.login_button)
         facebookLoginButton.setPermissions("public_profile", "email")
 
         facebookLoginButton.registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
             override fun onSuccess(result: LoginResult) {
-                facebookAuthManager.handleFacebookAccessToken(result.accessToken) { user ->
-                    user?.let {
-                        viewModel.signInWithFacebook(result.accessToken)
-                        updateUI(it, result.accessToken.userId, result.accessToken.token)
-                    } ?: run {
-                        Log.e("LoginFragment", "Facebook user data is null")
-                        Toast.makeText(context, "Failed to retrieve user information.", Toast.LENGTH_SHORT).show()
-                    }
-                }
+                // Initiate Facebook login via ViewModel
+                viewModel.signInWithFacebook(result.accessToken)
+
+                // Fetch profile info
+                viewModel.fetchFacebookUserProfile(result.accessToken)
+                loadingIndicator.visibility = View.VISIBLE
             }
 
             override fun onCancel() {
@@ -164,7 +168,34 @@ class LoginFragment : Fragment() {
                 Log.e("LoginFragment", "Facebook Login Error: ${error.message}")
             }
         })
+
+        // Observe the login result
+        viewModel.facebookUser.observe(viewLifecycleOwner) { user ->
+            user?.let {
+                // User signed in successfully, now fetch the profile
+                AccessToken.getCurrentAccessToken()
+                    ?.let { it1 -> viewModel.fetchFacebookUserProfile(it1) }
+            } ?: run {
+                Log.e("LoginFragment", "Failed to sign in with Facebook.")
+                Toast.makeText(context, "Authentication Failed.", Toast.LENGTH_SHORT).show()
+            }
+            loadingIndicator.visibility = View.GONE
+        }
+
+        // Observe the profile info
+        viewModel.profileInfo.observe(viewLifecycleOwner) { profile ->
+            val (name, profilePicUrl) = profile
+
+            // Get the current user from the LiveData
+            viewModel.user.observe(viewLifecycleOwner) { user ->
+                updateUI(user, name, profilePicUrl)
+                Handler().postDelayed({
+                    navigateToHome()
+                }, 3000) // 3 seconds delay
+            }
+        }
     }
+
 
     private fun setupObservers() {
         viewModel.user.observe(viewLifecycleOwner) { user ->
@@ -215,19 +246,35 @@ class LoginFragment : Fragment() {
 
     private fun updateUI(user: FirebaseUser?, name: String?, profilePicUrl: String?) {
         user?.let {
+            // Check if name and profilePicUrl are valid
             if (name.isNullOrEmpty() || profilePicUrl.isNullOrEmpty()) {
-                navigateToLogin()
+                // Handle missing profile info case
+                Log.e("LoginFragment", "Name or Profile Picture is missing")
+                navigateToLogin() // Optionally navigate to login or handle error
                 return
             }
-            showLoadingIndicator()
+
+            showLoadingIndicator() // Show the loading indicator
+
+            // Set user as logged in using preferencesHelper
             preferencesHelper.setLoggedIn(true)
+
+            // Set profile name and make it visible
             profileName.text = name
             profileName.visibility = View.VISIBLE
+
+            // Load and display the profile image
             loadProfileImage(profilePicUrl)
             profileImage.visibility = View.VISIBLE
+
+            // Hide the sign-in buttons after successful login
             hideSignInButtons()
+        } ?: run {
+            Log.e("LoginFragment", "User is null. Navigating to login.")
+            navigateToLogin()
         }
     }
+
     private fun showLoadingIndicator() {
         loadingIndicator.visibility = View.VISIBLE
     }
