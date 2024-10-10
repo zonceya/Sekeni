@@ -268,7 +268,7 @@ class LoginFragment : Fragment() {
             val account = task.getResult(ApiException::class.java)
             account?.idToken?.let {
                 viewModel.signInWithGoogle(it)
-                updateUI(null, account.displayName, account.photoUrl.toString())
+                //updateUI(null, account.displayName, account.photoUrl.toString())
             }
         } catch (e: ApiException) {
             Log.w("LoginFragment", "Google sign-in failed", e)
