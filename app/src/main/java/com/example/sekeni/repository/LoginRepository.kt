@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.example.sekeni.data.local.FacebookAuthManager
 import com.example.sekeni.data.local.GoogleAuthManager
 import com.facebook.AccessToken
+import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
@@ -24,11 +25,17 @@ class LoginRepository(
         }
     }
 
-    fun signInWithFacebook(token: AccessToken) {
+    fun signInWithFacebook(credential: AuthCredential, callback: (FirebaseUser?) -> Unit) {
         loading.value = true
-        facebookAuthManager.signIn(token) { firebaseUser ->
-            user.value = firebaseUser
+        FirebaseAuth.getInstance().signInWithCredential(credential).addOnCompleteListener { task ->
             loading.value = false
+            if (task.isSuccessful) {
+                val firebaseUser = FirebaseAuth.getInstance().currentUser
+                user.value = firebaseUser
+                callback(firebaseUser)
+            } else {
+                callback(null)
+            }
         }
     }
 

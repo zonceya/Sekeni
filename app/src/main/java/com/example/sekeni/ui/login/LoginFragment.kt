@@ -37,6 +37,8 @@ import com.example.sekeni.data.local.FacebookAuthManager
 import com.example.sekeni.data.local.GoogleAuthManager
 import com.example.sekeni.data.local.PreferencesHelper
 import com.example.sekeni.repository.LoginRepository
+import com.example.sekeni.ui.home.HomeFragment
+import com.example.sekeni.ui.home.HomeViewModel
 import com.facebook.*
 import com.facebook.login.LoginResult
 import com.facebook.login.widget.LoginButton
@@ -47,14 +49,14 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FacebookAuthProvider
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
 class LoginFragment : Fragment() {
 
     private lateinit var viewModel: LoginViewModel
     private lateinit var callbackManager: CallbackManager
-    private lateinit var profileImage: ImageView
-    private lateinit var profileName: TextView
     private lateinit var facebookLoginButton: LoginButton
     private lateinit var videoView: VideoView
     private lateinit var loadingIndicator: ProgressBar
@@ -73,7 +75,7 @@ class LoginFragment : Fragment() {
         // Create an instance of the LoginRepository
         // Step 1: Initialize ViewModel
         viewModel = ViewModelProvider(this)[LoginViewModel::class.java]
-
+        preferencesHelper = PreferencesHelper(requireContext())
         // Step 2: Create instances of GoogleAuthManager and FacebookAuthManager
         val googleAuthManager = GoogleAuthManager(requireContext())
         val facebookAuthManager = FacebookAuthManager()
@@ -84,7 +86,7 @@ class LoginFragment : Fragment() {
         // Step 4: Set the LoginRepository in the ViewModel
         viewModel.setLoginRepository(loginRepository)
         setupUI(view)
-        setupObservers()
+       // setupObservers()
         viewModel.checkCurrentUser()
         return view
     }
@@ -95,11 +97,7 @@ class LoginFragment : Fragment() {
         initializeVideoView(view)
         initializeGoogleSignIn(view)
         initializeFacebookLogin(view)
-        val navigationView = requireActivity().findViewById<NavigationView>(R.id.nav_view)
-        val headerView = navigationView.getHeaderView(0)
-        profileImage = headerView.findViewById(R.id.userProfileImage)
-        profileName = headerView.findViewById(R.id.profileName)
-       // facebookLoginButton = view.findViewById(R.id.login_button)
+
     }
 
     private fun hideActionBar() {
@@ -152,12 +150,36 @@ class LoginFragment : Fragment() {
 
         facebookLoginButton.registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
             override fun onSuccess(result: LoginResult) {
-                // Initiate Facebook login via ViewModel
-                viewModel.signInWithFacebook(result.accessToken)
-
-                // Fetch profile info
-                viewModel.fetchFacebookUserProfile(result.accessToken)
+                // Show loading indicator
                 loadingIndicator.visibility = View.VISIBLE
+                val credential = FacebookAuthProvider.getCredential(result.accessToken.token)
+                val accessToken = result.accessToken
+                viewModel.signInWithFacebook(result.accessToken.token) { firebaseUser ->
+                    if (firebaseUser != null) {
+                        // User is successfully authenticated
+                        viewModel.fetchFacebookUserProfile(accessToken) { name, profilePicUrl ->
+                            // Update HomeViewModel with fetched data
+                            val homeViewModel = ViewModelProvider(requireActivity()).get(
+                                HomeViewModel::class.java)
+                            homeViewModel.updateUserProfile(name, profilePicUrl)
+
+                            // Optionally add a delay before navigating to HomeFragment
+                            Handler().postDelayed({
+                                findNavController().navigate(R.id.homeFragment)
+                            }, 3000)
+                        }
+
+                    }else {
+                        // Handle authentication failure
+                        Toast.makeText(context, "Authentication failed.", Toast.LENGTH_SHORT).show()
+                    }
+                    // Hide loading indicator
+                    loadingIndicator.visibility = View.GONE
+                }
+                // Create a credential using the Facebook access token
+
+                // Sign in with Firebase using the credential
+
             }
 
             override fun onCancel() {
@@ -166,36 +188,11 @@ class LoginFragment : Fragment() {
 
             override fun onError(error: FacebookException) {
                 Log.e("LoginFragment", "Facebook Login Error: ${error.message}")
+                Toast.makeText(context, "Error during Facebook Login: ${error.message}", Toast.LENGTH_SHORT).show()
             }
         })
 
-        // Observe the login result
-        viewModel.facebookUser.observe(viewLifecycleOwner) { user ->
-            user?.let {
-                // User signed in successfully, now fetch the profile
-                AccessToken.getCurrentAccessToken()
-                    ?.let { it1 -> viewModel.fetchFacebookUserProfile(it1) }
-            } ?: run {
-                Log.e("LoginFragment", "Failed to sign in with Facebook.")
-                Toast.makeText(context, "Authentication Failed.", Toast.LENGTH_SHORT).show()
-            }
-            loadingIndicator.visibility = View.GONE
-        }
-
-        // Observe the profile info
-        viewModel.profileInfo.observe(viewLifecycleOwner) { profile ->
-            val (name, profilePicUrl) = profile
-
-            // Get the current user from the LiveData
-            viewModel.user.observe(viewLifecycleOwner) { user ->
-                updateUI(user, name, profilePicUrl)
-                Handler().postDelayed({
-                    navigateToHome()
-                }, 3000) // 3 seconds delay
-            }
-        }
     }
-
 
     private fun setupObservers() {
         viewModel.user.observe(viewLifecycleOwner) { user ->
@@ -244,82 +241,12 @@ class LoginFragment : Fragment() {
         this.visibility = View.GONE
     }
 
-    private fun updateUI(user: FirebaseUser?, name: String?, profilePicUrl: String?) {
-        user?.let {
-            // Check if name and profilePicUrl are valid
-            if (name.isNullOrEmpty() || profilePicUrl.isNullOrEmpty()) {
-                // Handle missing profile info case
-                Log.e("LoginFragment", "Name or Profile Picture is missing")
-                navigateToLogin() // Optionally navigate to login or handle error
-                return
-            }
-
-            showLoadingIndicator() // Show the loading indicator
-
-            // Set user as logged in using preferencesHelper
-            preferencesHelper.setLoggedIn(true)
-
-            // Set profile name and make it visible
-            profileName.text = name
-            profileName.visibility = View.VISIBLE
-
-            // Load and display the profile image
-            loadProfileImage(profilePicUrl)
-            profileImage.visibility = View.VISIBLE
-
-            // Hide the sign-in buttons after successful login
-            hideSignInButtons()
-        } ?: run {
-            Log.e("LoginFragment", "User is null. Navigating to login.")
-            navigateToLogin()
-        }
-    }
-
     private fun showLoadingIndicator() {
         loadingIndicator.visibility = View.VISIBLE
     }
 
     private fun hideLoadingIndicator() {
         loadingIndicator.visibility = View.GONE
-    }
-    private fun loadProfileImage(profilePicUrl: String) {
-        val requestOptions = RequestOptions()
-            .override(50, 50)
-            .fitCenter()
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-
-        Glide.with(requireContext())
-            .load(profilePicUrl)
-            .apply(requestOptions)
-            .transform(CircleCrop())
-            .placeholder(R.drawable.ic_launcher_foreground)
-            .error(R.drawable.rectangular)
-            .listener(object : RequestListener<Drawable> {
-                override fun onLoadFailed(
-                    e: GlideException?,
-                    model: Any?,
-                    target: Target<Drawable>,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    e?.logRootCauses("Glide")
-                    Log.e("Glide", "Error loading image", e)
-                    hideLoadingIndicator()
-                    navigateToLogin()
-                    return false
-                }
-
-                override fun onResourceReady(
-                    resource: Drawable,
-                    model: Any,
-                    target: Target<Drawable>?,
-                    dataSource: DataSource,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    hideLoadingIndicator()
-                    return false
-                }
-            })
-            .into(profileImage)
     }
 
     private fun navigateToLogin() {
@@ -351,7 +278,7 @@ class LoginFragment : Fragment() {
 
     private fun navigateToHome() {
         if (isNavigating) return
-        isNavigating = true
+          isNavigating = true
         val options = NavOptions.Builder()
             .setPopUpTo(R.id.loginFragment, true)
             .build()

@@ -31,31 +31,6 @@ class FacebookAuthManager {
     fun getCallbackManager(): CallbackManager {
         return callbackManager
     }
-
-    fun signIn(token: AccessToken, onComplete: (firebaseUser: FirebaseUser?) -> Unit) {
-        val credential = FacebookAuthProvider.getCredential(token.token)
-        auth.signInWithCredential(credential).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                onComplete(auth.currentUser)
-            } else {
-                onComplete(null)
-            }
-        }
-    }
-    fun handleFacebookAccessToken(token: AccessToken, onComplete: (firebaseUser: FirebaseUser?) -> Unit) {
-        // Obtain the credentials from the token
-        val credential = FacebookAuthProvider.getCredential(token.token)
-        // Sign in with Firebase using the Facebook credentials
-        auth.signInWithCredential(credential).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                // If sign-in is successful, return the FirebaseUser
-                onComplete(auth.currentUser)
-            } else {
-                // If sign-in fails, return null
-                onComplete(null)
-            }
-        }
-    }
     fun fetchUserProfile(token: AccessToken, onComplete: (String?, String?) -> Unit) {
         val request = GraphRequest.newMeRequest(token) { obj, _ ->
             try {

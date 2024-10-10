@@ -6,7 +6,7 @@ import com.example.sekeni.data.local.GoogleAuthManager
 import com.example.sekeni.repository.LoginRepository
 
 class SekeniApplication : Application() {
-    private lateinit var googleAuthManager: GoogleAuthManager
+    lateinit var googleAuthManager: GoogleAuthManager
     lateinit var facebookAuthManager: FacebookAuthManager
     lateinit var loginRepository: LoginRepository
 
