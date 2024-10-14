@@ -268,7 +268,15 @@ class LoginFragment : Fragment() {
             val account = task.getResult(ApiException::class.java)
             account?.idToken?.let {
                 viewModel.signInWithGoogle(it)
-                //updateUI(null, account.displayName, account.photoUrl.toString())
+                val homeViewModel = ViewModelProvider(requireActivity()).get(
+                    HomeViewModel::class.java)
+
+                homeViewModel.updateUserProfile("${account.givenName}" , "${account.photoUrl}"  )
+
+                // Optionally add a delay before navigating to HomeFragment
+                Handler().postDelayed({
+                    findNavController().navigate(R.id.homeFragment)
+                }, 3000)
             }
         } catch (e: ApiException) {
             Log.w("LoginFragment", "Google sign-in failed", e)
