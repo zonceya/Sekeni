@@ -40,7 +40,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        installSplashScreen()
+        Handler(Looper.getMainLooper()).postDelayed({
+            installSplashScreen()
+        }, 4000)
         val app = application as SekeniApplication
         facebookAuthManager = app.facebookAuthManager
         googleAuthManager = app.googleAuthManager
@@ -53,8 +55,7 @@ class MainActivity : AppCompatActivity() {
         preferencesHelper.clearPreferences()
         setSupportActionBar(binding.appBarMain.toolbar)
         LoginManager.getInstance().logOut()
-        Handler(Looper.getMainLooper()).postDelayed({
-        }, 3000)
+
         checkOnboardingAndLoginStatus()
     }
 

@@ -23,7 +23,11 @@
     <!-- AppBar and Popup Overlay Themes -->
     <style name="Theme.Sekeni.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
     <style name="Theme.Sekeni.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light" />
-
+    <style name="CustomMenuItemTextAppearance" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:fontFamily">@font/robotocondensed</item>
+        <item name="android:textSize">16sp</item> <!-- Adjust the size as needed -->
+        <item name="android:textColor">@color/black</item> <!-- Optional, for custom color -->
+    </style>
     <!-- Splash Screen Theme -->
     <style name="Theme.App.SplashScreen" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/white</item>
