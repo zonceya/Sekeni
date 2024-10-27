@@ -8,8 +8,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.ui.AppBarConfiguration
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
@@ -25,6 +27,8 @@ class HomeFragment : Fragment() {
 
     private lateinit var profileImage: ImageView
     private lateinit var profileName: TextView
+    private lateinit var divederview: View
+    private lateinit var profileUsername: TextView
     private lateinit var preferencesHelper: PreferencesHelper
     private lateinit var loadingIndicator: ProgressBar
     private lateinit var homeViewModel: HomeViewModel
@@ -39,12 +43,18 @@ class HomeFragment : Fragment() {
         val headerView = navigationView.getHeaderView(0)
         profileImage = headerView.findViewById(R.id.userProfileImage)
         profileName = headerView.findViewById(R.id.profileName)
+        profileUsername =  headerView.findViewById(R.id.profileUsername)
+        divederview = headerView.findViewById(R.id.divider)
         val name = homeViewModel.userName
         val profilePicUrl = homeViewModel.userProfilePicUrl
 
+        val drawerLayout = activity?.findViewById<DrawerLayout>(R.id.drawer_layout)
+        val appBarConfiguration = AppBarConfiguration(
+            setOf(R.id.homeFragment), // Top-level fragment
+            drawerLayout// DrawerLayout
+        )
         // Update UI with fetched data
         updateUI(name, profilePicUrl)
-
         return view
     }
     private fun updateUI(name: String?, profilePicUrl: String?) {
@@ -59,9 +69,10 @@ class HomeFragment : Fragment() {
 
         profileName.text = name
         profileName.visibility = View.VISIBLE
-
+        profileUsername.text = getString(R.string.profileUsername, name)
         loadProfileImage(profilePicUrl)
         profileImage.visibility = View.VISIBLE
+        divederview.visibility = View.VISIBLE
 
        // hideLoadingIndicator()
     }

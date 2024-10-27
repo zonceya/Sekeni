@@ -9,6 +9,8 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:title="User Profile"
+        app:navigationIcon="?attr/homeAsUpIndicator"
         android:theme="@style/Theme.Sekeni.AppBarOverlay">
 
         <androidx.appcompat.widget.Toolbar
@@ -34,7 +36,8 @@
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="16dp"
         android:contentDescription="TODO"
-        app:srcCompat="@android:drawable/ic_dialog_email"
+        android:backgroundTint="@color/white"
+        android:src="@drawable/ic_fabhanger"
         app:fabSize="normal" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

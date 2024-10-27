@@ -44,7 +44,6 @@ common = { group = "com.google.ai.client.generativeai", name = "common", version
 generativeai = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "generativeai" }
 custom-google-signin-button = { group = "com.github.shobhitpuri", name = "custom-google-signin-button", version.ref = "customGoogleSignInButton" }
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
-
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

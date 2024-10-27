@@ -39,6 +39,7 @@ import com.example.sekeni.data.local.PreferencesHelper
 import com.example.sekeni.repository.LoginRepository
 import com.example.sekeni.ui.home.HomeFragment
 import com.example.sekeni.ui.home.HomeViewModel
+import com.example.sekeni.ui.profile.ProfileViewModel
 import com.facebook.*
 import com.facebook.login.LoginResult
 import com.facebook.login.widget.LoginButton
@@ -270,9 +271,10 @@ class LoginFragment : Fragment() {
                 viewModel.signInWithGoogle(it)
                 val homeViewModel = ViewModelProvider(requireActivity()).get(
                     HomeViewModel::class.java)
-
+                val profileViewModel = ViewModelProvider(requireActivity()).get(
+                   ProfileViewModel::class.java)
                 homeViewModel.updateUserProfile("${account.givenName}" , "${account.photoUrl}"  )
-
+                profileViewModel.updateUserProfile("${account.givenName}" , "${account.photoUrl}"  )
                 // Optionally add a delay before navigating to HomeFragment
                 Handler().postDelayed({
                     findNavController().navigate(R.id.homeFragment)

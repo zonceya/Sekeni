@@ -27,7 +27,9 @@ class PreferencesHelper(private val context: Context) {
     fun isLoggedIn(): Boolean {
         return sharedPref.getBoolean("LoggedIn", false)
     }
-
+    fun isFirstTimeLogin(): Boolean {
+        return sharedPref.getBoolean("FirstTimeLogin", true) // Default is true for first-time
+    }
     fun clearPreferences() {
         with(sharedPref.edit()) {
             clear()

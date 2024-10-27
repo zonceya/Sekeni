@@ -13,7 +13,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 class GoogleAuthManager(private val context: Context) {
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-    private lateinit var googleSignInClient: GoogleSignInClient
+    lateinit var googleSignInClient: GoogleSignInClient
     private var isSignInTaskRunning = false
     init {
         initializeGoogleSignIn()
