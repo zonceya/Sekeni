@@ -3,6 +3,7 @@ package com.example.sekeni
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.GravityCompat
@@ -30,7 +31,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var preferencesHelper: PreferencesHelper
     private lateinit var facebookAuthManager: FacebookAuthManager
     private lateinit var navController: NavController
-
+    private var lastBackPressedTime: Long = 0
+    private val doubleBackPressDuration = 2000L
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen() // Install splash screen immediately
         super.onCreate(savedInstanceState)
@@ -48,7 +50,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // Setup NavController only once
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
 
         preferencesHelper.clearPreferences() // Clear preferences when app starts
@@ -57,7 +60,11 @@ class MainActivity : AppCompatActivity() {
         // Setup Navigation Drawer and ActionBar with NavController
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_profile, R.id.nav_store, R.id.nav_wallet, R.id.nav_purchases, R.id.nav_settings
+                R.id.nav_profile,
+                R.id.nav_store,
+                R.id.nav_wallet,
+                R.id.nav_purchases,
+                R.id.nav_settings
             ), binding.drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -77,9 +84,11 @@ class MainActivity : AppCompatActivity() {
             !preferencesHelper.isOnboardingFinished() -> {
                 navController.navigate(R.id.viewPagerFragment) // Navigate to onboarding
             }
+
             !preferencesHelper.isLoggedIn() -> {
                 navController.navigate(R.id.loginFragment) // Navigate to login
             }
+
             else -> {
                 navController.navigate(R.id.nav_home) // Navigate to home if logged in
             }
@@ -119,12 +128,30 @@ class MainActivity : AppCompatActivity() {
     }
 
     @Deprecated("Deprecated in Java")
+
     override fun onBackPressed() {
         val drawerLayout: DrawerLayout = binding.drawerLayout
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START)
         } else {
-            super.onBackPressed()
+            val currentDestinationId = navController.currentDestination?.id
+
+            if (preferencesHelper.isLoggedIn() && currentDestinationId == R.id.loginFragment) {
+                // Close the app instead of navigating back to login if user is logged in
+                finish()
+            } else if (currentDestinationId == R.id.loginFragment) {
+                // Double back press to exit on login screen
+                if (System.currentTimeMillis() - lastBackPressedTime < doubleBackPressDuration) {
+                    finish() // Close the app on double-back press
+                } else {
+                    lastBackPressedTime = System.currentTimeMillis()
+                    // Prompt the user
+                    Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                super.onBackPressed()
+            }
         }
     }
 }
+
