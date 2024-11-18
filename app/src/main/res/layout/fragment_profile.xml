@@ -104,8 +104,8 @@
                 android:layout_marginStart="20dp"
                 android:layout_below="@id/emailTextInputLayout"
                 android:layout_marginTop="20dp"
-                android:textColor="@color/black"
-                elavation="4dp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
                 android:background="@drawable/ic_rounded"
                 app:backgroundTint="@null"
                 android:text="Submit" >
@@ -170,7 +170,8 @@
                 android:background="@drawable/ic_rounded"
                 app:backgroundTint="@null"
                 android:layout_marginStart="20dp"
-                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:textColor="@color/white"
                 android:text="Delete Profile"
                 app:cornerRadius="8dp">
 

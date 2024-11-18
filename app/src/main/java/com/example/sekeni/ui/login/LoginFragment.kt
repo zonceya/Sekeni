@@ -49,6 +49,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -80,14 +81,12 @@ class LoginFragment : Fragment() {
         // Step 2: Create instances of GoogleAuthManager and FacebookAuthManager
         val googleAuthManager = GoogleAuthManager(requireContext())
         val facebookAuthManager = FacebookAuthManager()
-
         // Step 3: Create LoginRepository with the auth managers
         val loginRepository = LoginRepository(googleAuthManager, facebookAuthManager)
-
         // Step 4: Set the LoginRepository in the ViewModel
         viewModel.setLoginRepository(loginRepository)
         setupUI(view)
-       // setupObservers()
+        // setupObservers()
         viewModel.checkCurrentUser()
         return view
     }
@@ -153,6 +152,7 @@ class LoginFragment : Fragment() {
             override fun onSuccess(result: LoginResult) {
                 // Show loading indicator
                 loadingIndicator.visibility = View.VISIBLE
+                hideSignInButtons()
                 val credential = FacebookAuthProvider.getCredential(result.accessToken.token)
                 val accessToken = result.accessToken
                 viewModel.signInWithFacebook(result.accessToken.token) { firebaseUser ->
@@ -293,5 +293,10 @@ class LoginFragment : Fragment() {
             .setPopUpTo(R.id.loginFragment, true)
             .build()
         findNavController().navigate(R.id.nav_home, null, options)
+    }
+    override fun onResume() {
+        super.onResume()
+        val fab = activity?.findViewById<FloatingActionButton>(R.id.fab)
+        fab?.visibility = View.GONE  // Hide the FAB when on the LoginFragment
     }
 }

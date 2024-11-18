@@ -1,14 +1,21 @@
 package com.example.sekeni
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.legacy.app.ActionBarDrawerToggle
 import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -19,13 +26,14 @@ import com.example.sekeni.data.local.GoogleAuthManager
 import com.example.sekeni.data.local.PreferencesHelper
 import com.example.sekeni.databinding.ActivityMainBinding
 import com.facebook.login.LoginManager
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
-    private lateinit var binding: ActivityMainBinding
+    lateinit var binding: ActivityMainBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var googleAuthManager: GoogleAuthManager
     private lateinit var preferencesHelper: PreferencesHelper
@@ -33,6 +41,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     private var lastBackPressedTime: Long = 0
     private val doubleBackPressDuration = 2000L
+    private lateinit var fab: FloatingActionButton
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen() // Install splash screen immediately
         super.onCreate(savedInstanceState)
@@ -48,16 +57,28 @@ class MainActivity : AppCompatActivity() {
         // Inflate binding only once
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        // Setup NavController only once
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        navController = navHostFragment.navController
-
-        preferencesHelper.clearPreferences() // Clear preferences when app starts
         setSupportActionBar(binding.appBarMain.toolbar)
 
+        val headerView = binding.navView.getHeaderView(0) // Assuming `navView` is your NavigationView
+        val apiVersionText = headerView.findViewById<TextView>(R.id.api_version)
+
+        preferencesHelper.clearPreferences() // Clear preferences when app starts
+
+        val drawerLayout: DrawerLayout = binding.drawerLayout
+        val navView: NavigationView = binding.navView
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_main) as NavHostFragment
+        navController = navHostFragment.navController
         // Setup Navigation Drawer and ActionBar with NavController
+        val toggle = androidx.appcompat.app.ActionBarDrawerToggle(
+            this,
+            binding.drawerLayout,
+            binding.appBarMain.toolbar,
+            R.string.navigation_drawer_open,
+            R.string.navigation_drawer_close
+        )
+        binding.drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.nav_profile,
@@ -65,11 +86,24 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_wallet,
                 R.id.nav_purchases,
                 R.id.nav_settings
-            ), binding.drawerLayout
+            ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
-        binding.navView.setupWithNavController(navController)
-
+        navView.setupWithNavController(navController)
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            val fab = findViewById<FloatingActionButton>(R.id.fab)
+            supportActionBar?.let { actionBar ->
+                if (destination.id == R.id.loginFragment) {
+                    fab.visibility = View.GONE  // Hide the FAB
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        actionBar?.hide()
+                    }, 200)  // Hide the action bar
+                } else {
+                    fab.visibility = View.VISIBLE  // Show the FAB for other fragments
+                    actionBar.show()  // Show the action bar for other fragments
+                }
+            }
+        }
         // Set NavigationView listener
         binding.navView.setNavigationItemSelectedListener { item ->
             onNavigationItemSelected(item)
@@ -96,11 +130,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main, menu) // Inflate action bar menu
+        menuInflater.inflate(R.menu.main, menu)
+        Log.d("MainActivity", "Options menu created")
         return true
     }
 
     override fun onSupportNavigateUp(): Boolean {
+        val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
