@@ -1,6 +1,8 @@
 package com.example.sekeni.ui.home
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
@@ -14,6 +16,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
@@ -21,6 +24,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.example.sekeni.MainActivity
 import com.example.sekeni.R
 import com.example.sekeni.data.local.PreferencesHelper
+import com.example.sekeni.ui.banner.BannerAdapter
 import com.example.sekeni.ui.login.LoginViewModel
 import com.facebook.AccessToken
 import com.google.android.material.navigation.NavigationView
@@ -45,6 +49,10 @@ class HomeFragment : Fragment() {
         homeViewModel = ViewModelProvider(requireActivity()).get(HomeViewModel::class.java)
         // Initialize views
 
+        val viewPager = view.findViewById<ViewPager2>(R.id.topBannerIcon)
+        val bannerAdapter = BannerAdapter(this)
+        viewPager.adapter = bannerAdapter
+        autoScrollBanners(viewPager, bannerAdapter.bannerImages.size)
         val navigationView = requireActivity().findViewById<NavigationView>(R.id.nav_view)
         val headerView = navigationView.getHeaderView(0)
         profileImage = headerView.findViewById(R.id.userProfileImage)
@@ -59,6 +67,19 @@ class HomeFragment : Fragment() {
             // Update UI with fetched data
         updateUI(name, profilePicUrl)
         return view
+    }
+    private fun autoScrollBanners(viewPager: ViewPager2, itemCount: Int) {
+        val handler = Handler(Looper.getMainLooper())
+        val runnable = object : Runnable {
+            var currentItem = 0
+
+            override fun run() {
+                currentItem = (currentItem + 1) % itemCount
+                viewPager.currentItem = currentItem
+                handler.postDelayed(this, 3000) // Scroll every 3 seconds
+            }
+        }
+        handler.postDelayed(runnable, 3000)
     }
     private fun updateUI(name: String?, profilePicUrl: String?) {
         // Check if name and profilePicUrl are valid
