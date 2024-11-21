@@ -38,7 +38,7 @@ class ProfileFragment : Fragment() {
         toolbar?.title = "User Profile"  // Set the title
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
 
-        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)  // Show back button
+        //(activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)  // Show back button
 
         // Override back button press to handle going back to previous fragment
         toolbar?.setNavigationOnClickListener {
@@ -109,11 +109,10 @@ class ProfileFragment : Fragment() {
         val toolbar = activity?.findViewById<Toolbar>(R.id.toolbar)
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         (activity as AppCompatActivity).supportActionBar?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            setHomeAsUpIndicator(com.google.android.material.R.drawable.ic_arrow_back_black_24) // Optional custom back icon
+           // setDisplayHomeAsUpEnabled(true)
+           // setHomeAsUpIndicator(com.google.android.material.R.drawable.ic_arrow_back_black_24) // Optional custom back icon
             title = "User Profile"
         }
-
         toolbar?.setNavigationOnClickListener {
             activity?.onBackPressed()
         }

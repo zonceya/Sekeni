@@ -21,7 +21,7 @@
     </style>
 
     <!-- AppBar and Popup Overlay Themes -->
-    <style name="Theme.Sekeni.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
+    <style name="Theme.Sekeni.AppBarOverlay" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
     <style name="Theme.Sekeni.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light" />
     <style name="CustomMenuItemTextAppearance" parent="TextAppearance.AppCompat.Body1">
         <item name="android:fontFamily">@font/robotocondensed</item>

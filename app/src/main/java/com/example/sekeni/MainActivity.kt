@@ -81,6 +81,7 @@ class MainActivity : AppCompatActivity() {
         toggle.syncState()
         appBarConfiguration = AppBarConfiguration(
             setOf(
+                R.id.nav_home,
                 R.id.nav_profile,
                 R.id.nav_store,
                 R.id.nav_wallet,
@@ -124,7 +125,8 @@ class MainActivity : AppCompatActivity() {
             }
 
             else -> {
-                navController.navigate(R.id.nav_home) // Navigate to home if logged in
+                navController.navigate(R.id.nav_home)
+                supportActionBar?.show()// Navigate to home if logged in
             }
         }
     }

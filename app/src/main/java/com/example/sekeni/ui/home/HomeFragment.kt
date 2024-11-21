@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -33,7 +34,7 @@ import com.example.sekeni.ui.product.ProductAdapter
 import com.example.sekeni.ui.product.ProductViewModel
 import com.facebook.AccessToken
 import com.google.android.material.navigation.NavigationView
-import com.google.firebase.auth.FirebaseUser
+import androidx.appcompat.widget.Toolbar
 
 class HomeFragment : Fragment() {
 
@@ -78,7 +79,7 @@ class HomeFragment : Fragment() {
         val profilePicUrl = homeViewModel.userProfilePicUrl
         val activity = requireActivity() as MainActivity
         activity.supportActionBar?.show()
-        activity.binding.appBarMain.toolbar.title = getString(R.string.todo)
+      //  activity.binding.appBarMain.toolbar.title = getString(R.string.todo)
             // Update UI with fetched data
         updateUI(name, profilePicUrl)
 
@@ -144,4 +145,18 @@ class HomeFragment : Fragment() {
     private fun hideLoadingIndicator() {
         loadingIndicator.visibility = View.GONE
     }
+    override fun onResume() {
+        super.onResume()
+        val toolbar = activity?.findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
+        (activity as AppCompatActivity).setSupportActionBar(toolbar)
+        (activity as AppCompatActivity).supportActionBar?.apply {
+            title = "Home"
+            setDisplayHomeAsUpEnabled(false) // Ensure no back button
+        }
+
+        // Unlock the navigation drawer
+        val drawerLayout = activity?.findViewById<DrawerLayout>(R.id.drawer_layout)
+        drawerLayout?.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+    }
+
 }
