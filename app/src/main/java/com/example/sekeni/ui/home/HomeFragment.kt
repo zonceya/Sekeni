@@ -5,8 +5,6 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -16,9 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.ui.AppBarConfiguration
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
@@ -29,12 +25,10 @@ import com.example.sekeni.MainActivity
 import com.example.sekeni.R
 import com.example.sekeni.data.local.PreferencesHelper
 import com.example.sekeni.ui.banner.BannerAdapter
-import com.example.sekeni.ui.login.LoginViewModel
 import com.example.sekeni.ui.product.ProductAdapter
 import com.example.sekeni.ui.product.ProductViewModel
-import com.facebook.AccessToken
 import com.google.android.material.navigation.NavigationView
-import androidx.appcompat.widget.Toolbar
+import androidx.navigation.fragment.findNavController
 
 class HomeFragment : Fragment() {
 
@@ -48,44 +42,52 @@ class HomeFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewProductModel: ProductViewModel
     private lateinit var productAdapter: ProductAdapter
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
         homeViewModel = ViewModelProvider(requireActivity()).get(HomeViewModel::class.java)
-        viewProductModel = ViewModelProvider(this)[ProductViewModel::class.java]
-        // Initialize views
+        viewProductModel = ViewModelProvider(requireActivity())[ProductViewModel::class.java]
+        // Initialize the adapter before setting it to RecyclerView
+        productAdapter = ProductAdapter(emptyList()) { productId ->
+            viewProductModel.selectProduct(productId.toString())
+            findNavController().navigate(R.id.action_homeFragment_to_productFragment)
+        }
+
         recyclerView = view.findViewById(R.id.displayProductRecyclerView)
-        productAdapter = ProductAdapter(emptyList()) // Initialize with empty list
         recyclerView.layoutManager = GridLayoutManager(context, 2)
         recyclerView.adapter = productAdapter
 
-        // Observe ViewModel for product list
+        // Observe ViewModel for product list and update adapter
         viewProductModel.products.observe(viewLifecycleOwner) { products ->
             productAdapter.updateData(products)
         }
+
         val viewPager = view.findViewById<ViewPager2>(R.id.topBannerIcon)
         val bannerAdapter = BannerAdapter(this)
         viewPager.adapter = bannerAdapter
         autoScrollBanners(viewPager, bannerAdapter.bannerImages.size)
+
         val navigationView = requireActivity().findViewById<NavigationView>(R.id.nav_view)
         val headerView = navigationView.getHeaderView(0)
         profileImage = headerView.findViewById(R.id.userProfileImage)
         profileName = headerView.findViewById(R.id.profileName)
-        profileUsername =  headerView.findViewById(R.id.profileUsername)
+        profileUsername = headerView.findViewById(R.id.profileUsername)
         divederview = headerView.findViewById(R.id.divider)
+
         val name = homeViewModel.userName
         val profilePicUrl = homeViewModel.userProfilePicUrl
         val activity = requireActivity() as MainActivity
         activity.supportActionBar?.show()
-      //  activity.binding.appBarMain.toolbar.title = getString(R.string.todo)
-            // Update UI with fetched data
-        updateUI(name, profilePicUrl)
 
+        // Update UI with fetched data
+        updateUI(name, profilePicUrl)
 
         return view
     }
+
     private fun autoScrollBanners(viewPager: ViewPager2, itemCount: Int) {
         val handler = Handler(Looper.getMainLooper())
         val runnable = object : Runnable {
@@ -99,15 +101,12 @@ class HomeFragment : Fragment() {
         }
         handler.postDelayed(runnable, 3000)
     }
+
     private fun updateUI(name: String?, profilePicUrl: String?) {
-        // Check if name and profilePicUrl are valid
         if (name.isNullOrEmpty() || profilePicUrl.isNullOrEmpty()) {
             Log.e("HomeFragment", "Name or Profile Picture is missing")
-            // Handle the error (e.g., show a default image or prompt the user)
             return
         }
-
-        //showLoadingIndicator()
 
         profileName.text = name
         profileName.visibility = View.VISIBLE
@@ -115,8 +114,6 @@ class HomeFragment : Fragment() {
         loadProfileImage(profilePicUrl)
         profileImage.visibility = View.VISIBLE
         divederview.visibility = View.VISIBLE
-
-       // hideLoadingIndicator()
     }
 
     private fun loadProfileImage(profilePicUrl: String) {
@@ -138,13 +135,6 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun showLoadingIndicator() {
-        loadingIndicator.visibility = View.VISIBLE
-    }
-
-    private fun hideLoadingIndicator() {
-        loadingIndicator.visibility = View.GONE
-    }
     override fun onResume() {
         super.onResume()
         val toolbar = activity?.findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
@@ -158,5 +148,5 @@ class HomeFragment : Fragment() {
         val drawerLayout = activity?.findViewById<DrawerLayout>(R.id.drawer_layout)
         drawerLayout?.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
     }
-
 }
+

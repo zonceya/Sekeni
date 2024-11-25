@@ -8,11 +8,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.sekeni.data.local.product.Product
 import com.example.sekeni.R
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import com.bumptech.glide.Glide
 
 
-class ProductAdapter(private var productList: List<Product>) :
-    RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
+class ProductAdapter(
+    private var productList: List<Product>,
+    private val onProductClick: (String) -> Unit// Change Any to Product
+) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
 
     class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val productImage: ImageView = itemView.findViewById(R.id.product_image)
@@ -37,6 +40,11 @@ class ProductAdapter(private var productList: List<Product>) :
             .load(product.imageResId)
             .placeholder(R.drawable.zara)
             .into(holder.productImage)
+
+        // Handle click
+        holder.itemView.setOnClickListener {
+            onProductClick(product.id.toString()) // Pass the product ID
+        }
     }
 
     override fun getItemCount(): Int = productList.size
@@ -44,5 +52,10 @@ class ProductAdapter(private var productList: List<Product>) :
     fun updateData(newProducts: List<Product>) {
         productList = newProducts
         notifyDataSetChanged()
+    }
+
+    class DiffCallback : DiffUtil.ItemCallback<Product>() {
+        override fun areItemsTheSame(oldItem: Product, newItem: Product) = oldItem.id == newItem.id
+        override fun areContentsTheSame(oldItem: Product, newItem: Product) = oldItem == newItem
     }
 }
