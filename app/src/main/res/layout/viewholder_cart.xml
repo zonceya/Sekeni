@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/grey_product_background">
+
+    <!-- Cart Background View -->
+    <View
+        android:id="@+id/cart_imageview"
+        android:layout_width="82dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/cart_white_background"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <!-- Product Image -->
+    <ImageView
+        android:id="@+id/image_cartTitle"
+        android:layout_width="82dp"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/nike_shoe"
+        android:contentDescription="Cart Product Image"
+        app:layout_constraintStart_toStartOf="@id/cart_imageview"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="2dp" />
+
+    <!-- Product Title -->
+    <TextView
+        android:id="@+id/cartText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Product Title"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toEndOf="@id/image_cartTitle"
+        app:layout_constraintTop_toTopOf="@id/image_cartTitle"
+        android:layout_marginStart="16dp" />
+
+    <!-- Product Quantity -->
+    <TextView
+        android:id="@+id/cartText2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Quantity: 1"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="@id/cartText"
+        app:layout_constraintTop_toBottomOf="@id/cartText"
+        android:layout_marginTop="4dp" />
+
+    <!-- Product Price -->
+    <TextView
+        android:id="@+id/cartText3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="R0.00"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginEnd="8dp" />
+
+    <!-- Quantity Adjustment Controls -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/quantityControls"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp">
+
+        <!-- Decrease Quantity -->
+        <TextView
+            android:id="@+id/cartRemove"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:background="@drawable/cart_white_circle_background"
+            android:text="-"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <!-- Product Quantity -->
+        <TextView
+            android:id="@+id/cartProductQuantity"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:background="@drawable/cart_white_circle_background"
+            android:text="1"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toEndOf="@id/cartRemove"
+            app:layout_constraintEnd_toStartOf="@id/cartAdd"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <!-- Increase Quantity -->
+        <TextView
+            android:id="@+id/cartAdd"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:background="@drawable/cart_white_circle_background"
+            android:text="+"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textColor="@color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

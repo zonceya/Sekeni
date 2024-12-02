@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.appBarMain.toolbar)
 
         val headerView = binding.navView.getHeaderView(0) // Assuming `navView` is your NavigationView
-        val apiVersionText = headerView.findViewById<TextView>(R.id.api_version)
+       // val apiVersionText = headerView.findViewById<TextView>(R.id.api_version)
 
         preferencesHelper.clearPreferences() // Clear preferences when app starts
 

@@ -5,14 +5,19 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.AppCompatButton
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.sekeni.R
 import com.example.sekeni.data.local.product.Product
+import com.example.sekeni.repository.CartRepository
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class ProductFragment : Fragment() {
 
@@ -28,7 +33,9 @@ class ProductFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        val fab = activity?.findViewById<FloatingActionButton>(R.id.fab)
+        // Hide the FAB
+        fab?.visibility = View.GONE
         // Observe products LiveData
         viewModel.products.observe(viewLifecycleOwner) { products ->
             if (products.isNotEmpty()) {
@@ -47,30 +54,23 @@ class ProductFragment : Fragment() {
             }
         }
     }
-
+    private fun addToCart(product: Product) {
+        CartRepository.addToCart(product)
+       // Toast.makeText(requireContext(), "${product.title} added to cart", Toast.LENGTH_SHORT).show()
+    }
     private fun fetchProductDetails(productId: String) {
-        val parsedId = productId.toIntOrNull()
-
-        // Find product by ID
-        val product = viewModel.products.value?.find { it.id == parsedId }
-
+        val product = viewModel.products.value?.find { it.id == productId.toIntOrNull() }
         if (product != null) {
-            // Update UI elements
             view?.findViewById<TextView>(R.id.productTitle)?.text = product.name
             view?.findViewById<TextView>(R.id.productDescription)?.text = product.description
+            view?.findViewById<ImageView>(R.id.productDetailImage)?.let {
+                Glide.with(this).load(product.imageResId).placeholder(R.drawable.nike_shoe).into(it)
+            }
+            view?.findViewById<AppCompatButton>(R.id.productBuyButton)?.setOnClickListener {
+                addToCart(product)
+                findNavController().navigate(R.id.action_productFragment_to_cartFragment)
+            }
 
-            val productImage = view?.findViewById<ImageView>(R.id.productDetailImage)
-            if (productImage == null) {
-                Log.e("ProductFragment", "ImageView not found!")
-            } else {
-                Log.d("ProductFragment", "ImageView is ready.")
-            }
-            productImage?.let {
-                Glide.with(this)
-                    .load(product.imageResId)
-                    .placeholder(R.drawable.nike_shoe)
-                    .into(it)
-            }
         } else {
             Toast.makeText(requireContext(), "Product not found", Toast.LENGTH_SHORT).show()
         }

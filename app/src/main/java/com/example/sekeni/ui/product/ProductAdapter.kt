@@ -8,8 +8,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.sekeni.data.local.product.Product
 import com.example.sekeni.R
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.recyclerview.widget.DiffUtil
 import com.bumptech.glide.Glide
+import com.example.sekeni.repository.CartRepository
 
 
 class ProductAdapter(
@@ -25,7 +29,7 @@ class ProductAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.product_view_holder, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.view_holder_product, parent, false)
         return ProductViewHolder(view)
     }
 
@@ -43,7 +47,8 @@ class ProductAdapter(
 
         // Handle click
         holder.itemView.setOnClickListener {
-            onProductClick(product.id.toString()) // Pass the product ID
+            onProductClick(product.id.toString())
+
         }
     }
 
@@ -53,7 +58,10 @@ class ProductAdapter(
         productList = newProducts
         notifyDataSetChanged()
     }
-
+    private fun addToCart(product: Product) {
+        CartRepository.addToCart(product)
+        //Toast.makeText(requireContext(), "${product.name} added to cart", Toast.LENGTH_SHORT).show()
+    }
     class DiffCallback : DiffUtil.ItemCallback<Product>() {
         override fun areItemsTheSame(oldItem: Product, newItem: Product) = oldItem.id == newItem.id
         override fun areContentsTheSame(oldItem: Product, newItem: Product) = oldItem == newItem

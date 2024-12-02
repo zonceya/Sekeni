@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@id/homeFragment">
+    app:startDestination="@id/nav_userProfile">
 
     <fragment
         android:id="@+id/viewPagerFragment"
@@ -45,6 +45,14 @@
         android:id="@+id/productFragment"
         android:name="com.example.sekeni.ui.product.ProductFragment"
         tools:layout="@layout/fragment_product" />
+    <action
+        android:id="@+id/action_productFragment_to_cartFragment"
+        app:destination="@id/cartFragment" />
+    <fragment
+        android:id="@+id/cartFragment"
+        android:name="com.example.sekeni.ui.home.cart.CartFragment"
+        android:label="Cart"
+        tools:layout="@layout/fragment_cart" />
     <fragment
         android:id="@+id/nav_gallery"
         android:name="com.example.sekeni.ui.gallery.GalleryFragment"

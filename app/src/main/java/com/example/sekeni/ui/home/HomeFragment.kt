@@ -29,6 +29,8 @@ import com.example.sekeni.ui.product.ProductAdapter
 import com.example.sekeni.ui.product.ProductViewModel
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.fragment.findNavController
+import com.example.sekeni.ui.category.CategoryAdapter
+import com.example.sekeni.ui.category.CategoryViewModel
 
 class HomeFragment : Fragment() {
 
@@ -40,31 +42,72 @@ class HomeFragment : Fragment() {
     private lateinit var loadingIndicator: ProgressBar
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var recyclerView: RecyclerView
+    private lateinit var recyclerCategoryView: RecyclerView
     private lateinit var viewProductModel: ProductViewModel
     private lateinit var productAdapter: ProductAdapter
-
+    private lateinit var viewCategoryModel: CategoryViewModel
+    private lateinit var categoryAdapter: CategoryAdapter
+    private var currentPage = 1
+    private var isLoading = false
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
         homeViewModel = ViewModelProvider(requireActivity()).get(HomeViewModel::class.java)
-        viewProductModel = ViewModelProvider(requireActivity())[ProductViewModel::class.java]
+        viewProductModel = ViewModelProvider(requireActivity()).get(ProductViewModel::class.java)
+
+        viewCategoryModel = ViewModelProvider(requireActivity()).get(CategoryViewModel::class.java)
         // Initialize the adapter before setting it to RecyclerView
         productAdapter = ProductAdapter(emptyList()) { productId ->
             viewProductModel.selectProduct(productId.toString())
             findNavController().navigate(R.id.action_homeFragment_to_productFragment)
         }
+        categoryAdapter = CategoryAdapter(emptyList()) { categoryId ->
+            viewCategoryModel.selectCategory(categoryId.toString())
 
+        }
         recyclerView = view.findViewById(R.id.displayProductRecyclerView)
         recyclerView.layoutManager = GridLayoutManager(context, 2)
         recyclerView.adapter = productAdapter
 
+        recyclerCategoryView = view.findViewById(R.id.newListRecyclerView)
+        recyclerCategoryView.layoutManager = GridLayoutManager(context, 2)
+        recyclerCategoryView.adapter = categoryAdapter
+
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                val layoutManager = recyclerView.layoutManager as GridLayoutManager
+                val totalItemCount = layoutManager.itemCount
+                val lastVisibleItem = layoutManager.findLastVisibleItemPosition()
+
+                // Trigger pagination when reaching near the bottom
+                if (!isLoading && lastVisibleItem >= totalItemCount - 2) {
+                    viewProductModel.fetchNextPage()
+                }
+            }
+        })
         // Observe ViewModel for product list and update adapter
         viewProductModel.products.observe(viewLifecycleOwner) { products ->
             productAdapter.updateData(products)
         }
+        viewCategoryModel.category.observe(viewLifecycleOwner) { category ->
+            categoryAdapter.updateData(category)
+        }
 
+
+        recyclerCategoryView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                val layoutManager = recyclerView.layoutManager as GridLayoutManager
+                val totalItemCount = layoutManager.itemCount
+                val lastVisibleItem = layoutManager.findLastVisibleItemPosition()
+
+                // Trigger pagination when reaching near the bottom
+                if (!isLoading && lastVisibleItem >= totalItemCount - 2) {
+                    viewCategoryModel.fetchNextPage()
+                }
+            }
+        })
         val viewPager = view.findViewById<ViewPager2>(R.id.topBannerIcon)
         val bannerAdapter = BannerAdapter(this)
         viewPager.adapter = bannerAdapter
@@ -140,7 +183,7 @@ class HomeFragment : Fragment() {
         val toolbar = activity?.findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         (activity as AppCompatActivity).supportActionBar?.apply {
-            title = "Home"
+           // title = "Home"
             setDisplayHomeAsUpEnabled(false) // Ensure no back button
         }
 
