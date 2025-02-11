@@ -36,7 +36,7 @@ class OnboardingThirdScreen : Fragment() {
             // Delay navigation for 2 seconds
             view.postDelayed({
                 findNavController().navigate(R.id.loginFragment)
-            }, 3000) // 2000 milliseconds = 2 seconds
+            }, 2000) // 2000 milliseconds = 2 seconds
         }
         return view
     }

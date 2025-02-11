@@ -21,10 +21,10 @@ class ProductViewModel : ViewModel() {
 
     // Single source of truth for product data
     private val allProducts = listOf(
-        Product(1, "T-Shirt", "R100.00", 4.5, "Comfortable cotton T-shirt.", R.drawable.ic_tshirt),
-        Product(2, "Nike Shoes", "R200.00", 4.0, "Stylish Nike running shoes.", R.drawable.nike_shoe),
-        Product(3, "Adidas Hoodie", "R500", 3.0, "Warm Adidas hoodie.", R.drawable.adidas_hoodie),
-        Product(4, "Puma Cap", "R150", 2.3, "Trendy Puma cap.", R.drawable.pum_cap)
+        Product(1, "T-Shirt", "R100.00", 4.5, "Comfortable cotton T-shirt.","H&M","L" ,R.drawable.ic_tshirt),
+        Product(2, "Nike Shoes", "R200.00", 4.0, "Stylish Nike running shoes.","Nike","8" ,R.drawable.nike_shoe),
+        Product(3, "Adidas Hoodie", "R500", 3.0, "Warm Adidas hoodie.","Adidas","M", R.drawable.adidas_hoodie),
+        Product(4, "Puma Cap", "R150", 2.3, "Trendy Puma cap.","Puma","S", R.drawable.pum_cap)
     )
 
     init {

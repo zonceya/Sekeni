@@ -1,5 +1,4 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
@@ -10,53 +9,13 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Image Carousel -->
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <!-- Product Image -->
+        <ImageView
+            android:id="@+id/productImages"
             android:layout_width="match_parent"
-            android:layout_marginTop="50dp"
-            android:layout_height="400dp">
-
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/viewProductDetailPager"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-            <!-- Tap to Zoom Text -->
-            <TextView
-                android:id="@+id/tapToZoom"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:background="@drawable/rectangular"
-                android:padding="8dp"
-                android:text="TAP TO ZOOM"
-                android:textColor="@android:color/white"
-                android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-
-            <!-- Like Button -->
-            <ImageButton
-                android:id="@+id/likeButton"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_margin="16dp"
-                android:background="@null"
-                android:src="@drawable/ic_fav"
-                android:contentDescription="Like Button"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-
-            <com.google.android.material.tabs.TabLayout
-                android:id="@+id/tabLayout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toTopOf="@id/tapToZoom"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:tabIndicatorGravity="center"
-                app:tabSelectedTextColor="@color/black" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_height="300dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/nike_shoe" />
 
         <!-- Product Title -->
         <TextView
@@ -99,7 +58,7 @@
             android:id="@+id/sizeLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Size"
+            android:text="Select a size"
             android:textStyle="bold"
             android:paddingTop="8dp" />
 
@@ -110,6 +69,7 @@
             android:orientation="horizontal"
             android:gravity="center"
             android:padding="16dp">
+
 
             <!-- Size Option M -->
             <TextView
@@ -122,6 +82,8 @@
                 android:textColor="@color/white"
                 android:textStyle="bold"
                 android:layout_margin="8dp" />
+
+
         </LinearLayout>
 
         <!-- More Options -->

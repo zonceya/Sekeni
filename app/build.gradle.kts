@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "com.example.sekeni"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.sekeni"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -51,6 +51,8 @@ dependencies {
     implementation(libs.glide)
     implementation(libs.common)
     implementation(libs.generativeai)
+    implementation(libs.androidx.databinding.runtime)
+    implementation(libs.androidx.media3.common.ktx)
     annotationProcessor(libs.glide.compiler)
     implementation (libs.core.splashscreen)
     implementation(libs.androidx.constraintlayout)

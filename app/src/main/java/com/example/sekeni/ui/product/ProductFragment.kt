@@ -13,6 +13,7 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.example.sekeni.R
 import com.example.sekeni.data.local.product.Product
@@ -28,6 +29,7 @@ class ProductFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         viewModel = ViewModelProvider(requireActivity())[ProductViewModel::class.java]
+
         return inflater.inflate(R.layout.fragment_product, container, false)
     }
 
@@ -36,6 +38,14 @@ class ProductFragment : Fragment() {
         val fab = activity?.findViewById<FloatingActionButton>(R.id.fab)
         // Hide the FAB
         fab?.visibility = View.GONE
+
+        val images = listOf(
+            R.drawable.adidas_hoodie,
+            R.drawable.adidashodi7,
+            R.drawable.adidashodi8
+        )
+        val viewPager = view.findViewById<ViewPager2>(R.id.viewProductDetailPager)
+        viewPager.adapter = ViewPagerAdapterProduct(images)
         // Observe products LiveData
         viewModel.products.observe(viewLifecycleOwner) { products ->
             if (products.isNotEmpty()) {
@@ -63,10 +73,13 @@ class ProductFragment : Fragment() {
         if (product != null) {
             view?.findViewById<TextView>(R.id.productTitle)?.text = product.name
             view?.findViewById<TextView>(R.id.productDescription)?.text = product.description
-            view?.findViewById<ImageView>(R.id.productDetailImage)?.let {
+            view?.findViewById<TextView>(R.id.sizeM)?.text = product.size
+            view?.findViewById<TextView>(R.id.productPrice)?.text = product.price
+            view?.findViewById<TextView>(R.id.brandName)?.text = product.brandName
+            view?.findViewById<ImageView>(R.id.productImages)?.let {
                 Glide.with(this).load(product.imageResId).placeholder(R.drawable.nike_shoe).into(it)
             }
-            view?.findViewById<AppCompatButton>(R.id.productBuyButton)?.setOnClickListener {
+            view?.findViewById<AppCompatButton>(R.id.addToCart)?.setOnClickListener {
                 addToCart(product)
                 findNavController().navigate(R.id.action_productFragment_to_cartFragment)
             }

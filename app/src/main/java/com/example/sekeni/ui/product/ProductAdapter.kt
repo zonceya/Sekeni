@@ -38,6 +38,7 @@ class ProductAdapter(
         holder.productTitle.text = product.name
         holder.productPrice.text = product.price
         holder.productRating.text = product.rating.toString()
+        holder.productRating.text = product.size
 
         // Load product image
         Glide.with(holder.productImage.context)

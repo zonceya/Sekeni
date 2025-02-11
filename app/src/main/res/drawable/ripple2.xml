@@ -1,0 +1,16 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Outer Circle (Border) -->
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="#FFFFFF" /> <!-- Replace with your desired border color -->
+        </shape>
+    </item>
+
+    <!-- Inner Circle (Icon Background) -->
+    <item android:insetLeft="4dp" android:insetTop="4dp" android:insetRight="4dp" android:insetBottom="4dp">
+        <shape android:shape="oval">
+            <solid android:color="@android:color/black" /> <!-- Matches FAB background -->
+        </shape>
+    </item>
+</layer-list>
+

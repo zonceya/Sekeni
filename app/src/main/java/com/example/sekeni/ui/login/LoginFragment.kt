@@ -166,6 +166,7 @@ class LoginFragment : Fragment() {
 
                             // Optionally add a delay before navigating to HomeFragment
                             Handler().postDelayed({
+                                preferencesHelper.setLoggedIn(true)
                                 findNavController().navigate(R.id.homeFragment)
                             }, 3000)
                         }

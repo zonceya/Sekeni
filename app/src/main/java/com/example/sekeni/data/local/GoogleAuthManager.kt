@@ -21,7 +21,7 @@ class GoogleAuthManager(private val context: Context) {
 
     private fun initializeGoogleSignIn() {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken("YOUR_WEB_CLIENT_ID") // Replace with your web client ID
+            .requestIdToken("YOUR_WEB_CLIENT_ID")
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(context, gso)

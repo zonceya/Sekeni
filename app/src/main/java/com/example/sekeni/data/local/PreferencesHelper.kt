@@ -8,18 +8,19 @@ class PreferencesHelper(private val context: Context) {
 
     fun setOnboardingFinished(isFinished: Boolean) {
         with(sharedPref.edit()) {
-            putBoolean("Finished", isFinished)
+            putBoolean("OnboardingFinished", isFinished)
             apply()
         }
     }
 
+
     fun isOnboardingFinished(): Boolean {
-        return sharedPref.getBoolean("Finished", false)
+        return sharedPref.getBoolean("OnboardingFinished", false)
     }
 
     fun setLoggedIn(isLoggedIn: Boolean) {
         with(sharedPref.edit()) {
-            putBoolean("LoggedIn", isLoggedIn)
+            putBoolean("UserLoggedIn", isLoggedIn)
             apply()
         }
     }
@@ -27,9 +28,18 @@ class PreferencesHelper(private val context: Context) {
     fun isLoggedIn(): Boolean {
         return sharedPref.getBoolean("LoggedIn", false)
     }
-    fun isFirstTimeLogin(): Boolean {
-        return sharedPref.getBoolean("FirstTimeLogin", true) // Default is true for first-time
+
+    fun isFirstTimeLaunch(): Boolean {
+        return sharedPref.getBoolean("FirstTimeLaunch", true)
     }
+
+    fun setFirstTimeLaunch(isFirstTime: Boolean) {
+        with(sharedPref.edit()) {
+            putBoolean("FirstTimeLaunch", isFirstTime)
+            apply()
+        }
+    }
+
     fun clearPreferences() {
         with(sharedPref.edit()) {
             clear()
@@ -37,3 +47,4 @@ class PreferencesHelper(private val context: Context) {
         }
     }
 }
+
