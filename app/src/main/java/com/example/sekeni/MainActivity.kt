@@ -15,6 +15,8 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.legacy.app.ActionBarDrawerToggle
 import androidx.navigation.NavController
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -24,11 +26,14 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.sekeni.data.local.FacebookAuthManager
 import com.example.sekeni.data.local.GoogleAuthManager
 import com.example.sekeni.data.local.PreferencesHelper
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.appcompat.app.AppCompatActivity
 import com.example.sekeni.databinding.ActivityMainBinding
 import com.facebook.login.LoginManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 
 class MainActivity : AppCompatActivity() {
 
@@ -42,8 +47,10 @@ class MainActivity : AppCompatActivity() {
     private var lastBackPressedTime: Long = 0
     private val doubleBackPressDuration = 2000L
     private lateinit var fab: FloatingActionButton
+    private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen() // Install splash screen immediately
+        installSplashScreen()
         super.onCreate(savedInstanceState)
 
         val app = application as SekeniApplication
@@ -64,21 +71,14 @@ class MainActivity : AppCompatActivity() {
 
         preferencesHelper.clearPreferences() // Clear preferences when app starts
 
+        binding.appBarMain.fab.setOnClickListener { view ->
+            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                .setAction("Action", null)
+                .setAnchorView(R.id.fab).show()
+        }
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_main) as NavHostFragment
-        navController = navHostFragment.navController
-        // Setup Navigation Drawer and ActionBar with NavController
-        val toggle = androidx.appcompat.app.ActionBarDrawerToggle(
-            this,
-            binding.drawerLayout,
-            binding.appBarMain.toolbar,
-            R.string.navigation_drawer_open,
-            R.string.navigation_drawer_close
-        )
-        binding.drawerLayout.addDrawerListener(toggle)
-        toggle.syncState()
+        val navController = findNavController(R.id.nav_host_fragment_content_main)
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.nav_home,

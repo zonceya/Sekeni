@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -180,16 +181,23 @@ class HomeFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        val toolbar = activity?.findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
-        (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        (activity as AppCompatActivity).supportActionBar?.apply {
-           // title = "Home"
-            setDisplayHomeAsUpEnabled(false) // Ensure no back button
+
+        val activity = requireActivity() as AppCompatActivity
+        val toolbar = activity.findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
+        activity.setSupportActionBar(toolbar)
+
+        activity.supportActionBar?.apply {
+            show()
+            setDisplayHomeAsUpEnabled(false) // Disable back button
+            setHomeButtonEnabled(true) // No back button in Home
         }
 
-        // Unlock the navigation drawer
-        val drawerLayout = activity?.findViewById<DrawerLayout>(R.id.drawer_layout)
-        drawerLayout?.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+        // Unlock drawer in HomeFragment
+        val drawerLayout = activity.findViewById<DrawerLayout>(R.id.drawer_layout)
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+        val toggle = ActionBarDrawerToggle(activity, drawerLayout, toolbar, R.string.nav_open, R.string.nav_close)
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
     }
 }
 
