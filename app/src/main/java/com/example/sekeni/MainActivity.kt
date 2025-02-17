@@ -59,9 +59,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.appBarMain.toolbar)
 
-        val headerView = binding.navView.getHeaderView(0) // Assuming `navView` is your NavigationView
-       // val apiVersionText = headerView.findViewById<TextView>(R.id.api_version)
-
         preferencesHelper.clearPreferences() // Clear preferences when app starts
 
         val drawerLayout: DrawerLayout = binding.drawerLayout
@@ -69,16 +66,7 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_main) as NavHostFragment
         navController = navHostFragment.navController
-        // Setup Navigation Drawer and ActionBar with NavController
-        val toggle = androidx.appcompat.app.ActionBarDrawerToggle(
-            this,
-            binding.drawerLayout,
-            binding.appBarMain.toolbar,
-            R.string.navigation_drawer_open,
-            R.string.navigation_drawer_close
-        )
-        binding.drawerLayout.addDrawerListener(toggle)
-        toggle.syncState()
+
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.nav_home,
