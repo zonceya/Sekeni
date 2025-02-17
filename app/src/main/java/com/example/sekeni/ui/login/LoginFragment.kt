@@ -105,8 +105,8 @@ class LoginFragment : Fragment() {
     }
 
     private fun lockDrawer() {
-        val drawerLayout = (activity as MainActivity).findViewById<DrawerLayout>(R.id.drawer_layout)
-        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        val drawerLayout = (activity as? MainActivity)?.findViewById<DrawerLayout>(R.id.drawer_layout)
+        drawerLayout?.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
     }
 
     private fun initializeVideoView(view: View) {
@@ -166,7 +166,7 @@ class LoginFragment : Fragment() {
 
                             // Optionally add a delay before navigating to HomeFragment
                             Handler().postDelayed({
-                                findNavController().navigate(R.id.homeFragment)
+                                navigateToHome()
                             }, 3000)
                         }
 
@@ -287,12 +287,20 @@ class LoginFragment : Fragment() {
     }
 
     private fun navigateToHome() {
-        if (isNavigating) return
-          isNavigating = true
-        val options = NavOptions.Builder()
-            .setPopUpTo(R.id.loginFragment, true)
-            .build()
-        findNavController().navigate(R.id.nav_home, null, options)
+        val activity = requireActivity() as AppCompatActivity
+        val drawerLayout = activity.findViewById<DrawerLayout>(R.id.drawer_layout)
+
+        // Restore toolbar
+        activity.supportActionBar?.apply {
+            show()
+            setDisplayHomeAsUpEnabled(false) // No back button in Home
+        }
+
+        // Unlock drawer for HomeFragment
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+
+        // Navigate to HomeFragment
+        findNavController().navigate(R.id.homeFragment)
     }
     override fun onResume() {
         super.onResume()
