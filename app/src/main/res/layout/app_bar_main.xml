@@ -36,6 +36,7 @@
         android:backgroundTint="@color/white"
         android:contentDescription="TODO"
         android:src="@drawable/plus_fab"
+        app:maxImageSize="56dp"
         app:fabSize="normal" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
