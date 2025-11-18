@@ -40,4 +40,10 @@
     <string name="Login_heading_line">The On-line Mavumbulula.\nOwn your own On-line Store.\nStart selling all the clothes you don\'t want to give to your uncles and cousins</string>
     <string name="logout">logout</string>
     <string name="profileUsername">\@%1$s</string>
+    <string name="sell_easily">Sell Easily</string>
+    <string name="sell_easy_disc">Sell your school’s preloved items—from uniforms and accessories to sports gear—all through your phone.</string>
+    <string name="trusted_community">Trusted Community</string>
+    <string name="trust_desc">Buy and Sell with your school community, safely.</string>
+    <string name="secure_payments">Secure Payments</string>
+    <string name="secure_desc">Trade confidently with secure payments</string>
 </resources>
